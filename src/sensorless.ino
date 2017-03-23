@@ -1,34 +1,39 @@
+/**
+ * For ATmega328P
+ */
 volatile uint8_t phase = 0; // motor firing phase
 volatile long position = 0; // current position
 
 void setup() {
-    // configure motor control outputs
-    DDRC |= 0x3F;  // A0-A5 as outputs
-    // equivalent of:
-    //   pinMode(A0, OUTPUT);
-    //   pinMode(A1, OUTPUT);
-    //   pinMode(A2, OUTPUT);
-    //   pinMode(A3, OUTPUT);
-    //   pinMode(A4, OUTPUT);
-    //   pinMode(A5, OUTPUT);
+    /**
+     * Set control pins as output in the DDRC register (Port C Data Direction Register).
+     * If DDxn is written logic one, Pxn is configured as an output pin.
+     *
+     * PC0 Phase A low, output
+     * PC1 Phase B low, output
+     * PC2 Phase C low, output
+     * PC3 Phase A high, output
+     * PC4 Phase B high, output
+     * PC5 Phase C high, outpu
+     *
+     * Bit:   7   6   5   4   3   2   1   0
+     *        --- PC6 PC5 PC4 PC3 PC2 PC1 PC0
+     * Value: 0   0   1   1   1   1   1   1   in binary or 0x3F in hexdecimal
+     */
+    DDRC |= 0b00111111; // C0-C5 as outputs
 
-    // configure uC control pins
-    DDRD &= !0xEF; // 0-3, 5-7 as inputs (will break serial communication and require ISP programmer to undo)
-    DDRD |= 0x10;  // 4 as output, used for software pin change interrupt
-    PORTD |= 0xE0; // turn on pullup resistors
-    // equivalent of:
-    //   pinMode(0, INPUT);  // sample and hold
-    //   pinMode(1, INPUT);  // motor direction
-    //   pinMode(2, INPUT);  // encoder channel B
-    //   pinMode(3, INPUT);  // encoder channel A
-    //   pinMode(4, OUTPUT); // used for software initiated pin change interrupt
-    //   pinMode(5, INPUT);  // hall sensor 3
-    //   pinMode(6, INPUT);  // hall sensor 2
-    //   pinMode(7, INPUT);  // hall sensor 1
-
-    // configure misc pins
-    pinMode(8, OUTPUT); // status LED
-    pinMode(9, INPUT);  // pwm pin, master controls this
+    /**
+     * Set status LED as output and PWM as input.
+     * If DDxn is written logic one, Pxn is configured as an output pin.
+     *
+     * PB0 Status LED, output
+     * PB1 PWM in, input
+     *
+     * Bit:   7   6   5   4   3   2   1   0
+     *        --- PB6 PB5 PB4 PB3 PB2 PB1 PB0
+     * Value: 0   0   0   0   0   0   0   1
+     */
+    DDRB |= 0b00000001;
 
     // flash LED thrice on reset
     for (int i=0; i<6; i++) {
@@ -39,7 +44,7 @@ void setup() {
 
 void loop() {
     // commutate motor
-    commutate(phase);
+    // commutate(phase);
 
     /*
     // lookup tabel for position incrementing (3-phase version of quadrature)
