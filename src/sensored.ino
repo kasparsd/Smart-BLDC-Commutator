@@ -56,14 +56,14 @@ void setup() {
     initInterrupt();
 
     // setup phase to correct motor position by triggering pin change interrupt a few times
-    // fills in hall variable in pin change ISR 
+    // fills in hall variable in pin change ISR
     delay(1);
     digitalWrite(4, LOW);
     delay(1);
     digitalWrite(4, HIGH);
     delay(1);
     digitalWrite(4, LOW);
-	
+
 	// flash LED thrice on reset
 	for (int i=0; i<6; i++) {
 	    PINB |= _BV(0);
@@ -84,7 +84,7 @@ void loop() {
         position_buffer[0] = sample_position >> 24; // divide sampled position
         position_buffer[1] = sample_position >> 16; // into byte sized chuncks
         position_buffer[2] = sample_position >> 8;  // for SPI transfer
-        position_buffer[3] = sample_position;       // 
+        position_buffer[3] = sample_position;       //
         sample_and_hold_set = true;                 // set flag that sample has been taken
         PINB |= _BV(0);                             // toggle LED
     } else if (sample_and_hold_pin == false && sample_and_hold_set == true) {
@@ -123,8 +123,8 @@ ISR(PCINT2_vect) { // run every time there is a pin change on port D pin change
     int port = PIND; // read the port
 
     sample_and_hold_pin = port & 1; // flag to tell loop to store current position in buffer
-    
-    dir = (port >> 1) & 1; // direction value, 1 or 0 
+
+    dir = (port >> 1) & 1; // direction value, 1 or 0
     hall = hall << 3;      // preserve last read for position in/decrement
     hall |= port >> 5;     // shift to read only hall sensors
 
