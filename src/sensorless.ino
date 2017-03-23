@@ -1,4 +1,3 @@
-
 volatile uint8_t phase = 0; // motor firing phase
 volatile long position = 0; // current position
 
@@ -31,32 +30,18 @@ void setup() {
     pinMode(8, OUTPUT); // status LED
     pinMode(9, INPUT);  // pwm pin, master controls this
 
-    // initialize interrupts
-    initInterrupt();
-
-    // setup phase to correct motor position by triggering pin change interrupt a few times
-    // fills in hall variable in pin change ISR
-    delay(1);
-    digitalWrite(4, LOW);
-    delay(1);
-    digitalWrite(4, HIGH);
-    delay(1);
-    digitalWrite(4, LOW);
-
-	// flash LED thrice on reset
-	for (int i=0; i<6; i++) {
-	    PINB |= _BV(0);
-		delay(80);
-	}
+    // flash LED thrice on reset
+    for (int i=0; i<6; i++) {
+        PINB |= _BV(0);
+        delay(80);
+    }
 }
-
-
 
 void loop() {
     // commutate motor
     commutate(phase);
 
-	/*
+    /*
     // lookup tabel for position incrementing (3-phase version of quadrature)
     static int8_t hall_inc[] = {0,0,0,0,0,0,0,0,0,0,0,1,0,-1,0,0,0,0,0,-1,0,0,1,0,0,-1,1,0,0,0,0,0,0,0,0,0,0,1,-1,0,0,1,0,0,-1,0,0,0,0,0,-1,0,1,0,0,0,0,0,0,0,0,0,0,0};
 
@@ -84,16 +69,7 @@ void loop() {
     position += hall_inc[hall & 0x3F]; // use <hall_prev><hall_current> as lookup index to which will increment, decrement or do nothing to position value
 
     PINB |= _BV(0);                             // toggle LED
-	*/
-}
-
-
-
-void initInterrupt() {
-    cli();                //disable interrupts while changing settings
-    PCICR |= 1 << PCIE2;  // set bit 2 in PCICR for PCINT23:16 (port D)
-    PCMSK2 |= 0xFF;       // enable pin change interrupts on port D (all pins)
-    sei();
+    */
 }
 
 void commutate(uint8_t _phase) {
