@@ -44,37 +44,10 @@ void setup() {
 
 void loop() {
     // commutate motor
-    // commutate(phase);
-
-    /*
-    // lookup tabel for position incrementing (3-phase version of quadrature)
-    static int8_t hall_inc[] = {0,0,0,0,0,0,0,0,0,0,0,1,0,-1,0,0,0,0,0,-1,0,0,1,0,0,-1,1,0,0,0,0,0,0,0,0,0,0,1,-1,0,0,1,0,0,-1,0,0,0,0,0,-1,0,1,0,0,0,0,0,0,0,0,0,0,0};
-
-    // lookup table for setting next motor phase, extended to allow reverse direction
-    static uint8_t phase_lookup[] = {0, 2, 4, 3, 6, 1, 5, 2, 4, 3};
-
-    static int hall = 0;
-    static uint8_t dir = 0;
-    static bool sample_and_hold_set = false;
-
-    int port = PIND; // read the port
-
-    sample_and_hold_pin = port & 1; // flag to tell loop to store current position in buffer
-
-    dir = (port >> 1) & 1; // direction value, 1 or 0
-    hall = hall << 3;      // preserve last read for position in/decrement
-    hall |= port >> 5;     // shift to read only hall sensors
-
-    if (dir == 0) {
-        phase = phase_lookup[(hall & 0x07)];     // determine next phase to fire on the motor
-    } else {
-        phase = phase_lookup[(hall & 0x07) + 3]; // adding 3 to lookup index has the effect of reversing the motor (MAGIC!)
+    for (int i=0; i<6; i++) {
+        commutate(i);
+        delay(100);
     }
-
-    position += hall_inc[hall & 0x3F]; // use <hall_prev><hall_current> as lookup index to which will increment, decrement or do nothing to position value
-
-    PINB |= _BV(0);                             // toggle LED
-    */
 }
 
 void commutate(uint8_t _phase) {
